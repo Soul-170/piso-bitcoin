@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piso Bitcoin — Indicadores</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--bd:#30363d;--tx:#e6edf3;--mut:#8b949e;--ok:#2ea043;--near:#d29922;--far:#f85149}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:18px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+button{background:#21262d;color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer}
+button:hover{background:#2d333b}
+button.primary{background:#238636;border-color:#2ea043}
+.upd{color:var(--mut);font-size:12px;margin-left:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--bd);font-size:14px}
+th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border-bottom:none}
+.val{font-variant-numeric:tabular-nums;font-weight:600}
+.st{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.st.ok{background:rgba(46,160,67,.18);color:#3fb950}
+.st.near{background:rgba(210,153,34,.18);color:#e3b341}
+.st.far{background:rgba(248,81,73,.16);color:#ff7b72}
+.live{font-size:10px;color:#58a6ff;margin-left:6px}
+.foot{color:var(--mut);font-size:12px;margin-top:16px;line-height:1.5}
+.err{background:rgba(248,81,73,.12);border:1px solid #f85149;color:#ff7b72;padding:10px 12px;border-radius:8px;margin-bottom:14px;display:none;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🟠 Piso Bitcoin — Panel de indicadores</h1>
+<div class="sub">Señales de suelo del ciclo. Actualización automática diaria (07:17 Bogotá) via GitHub Actions.</div>
+<div id="err" class="err"></div>
+<div class="bar">
+<button class="primary" id="btnR" onclick="cargar()">↻ Refrescar datos</button>
+<button id="btnL" onclick="vivo()">⚡ Recalcular en vivo</button>
+<span class="upd" id="upd">cargando…</span>
+</div>
+<table>
+<thead><tr><th>Indicador</th><th>Valor actual</th><th>Objetivo (piso)</th><th>Estado</th></tr></thead>
+<tbody id="tb"></tbody>
+</table>
+<div class="foot">Estados: <b>ALCANZADO</b> = condición de piso cumplida &middot; <b>ACERCÁNDOSE</b> = a 6% o menos del objetivo &middot; <b>LEJOS</b>. Fuentes: CoinGecko, Alternative.me y BGeometrics. No es asesoría financiera.</div>
+</div>
+<script>
+const LABELS={dias_ath:"Días desde ATH",caida_ath:"% caída desde ATH",ma200w:"Precio / MA 200 semanas",realizado:"Precio realizado",sopr365:"SOPR 365 días",mvrv:"MVRV Ratio",supply_profit:"% circulante en ganancias",fng:"Miedo y Codicia"};
+function render(d){const tb=document.getElementById('tb');tb.innerHTML='';(d.rows||[]).forEach(r=>{const tr=document.createElement('tr');const cls=r.estado==='ALCANZADO'?'ok':(r.estado==='ACERCÁNDOSE'?'near':'far');tr.innerHTML='<td>'+(LABELS[r.key]||r.key)+(r.live?'<span class=\"live\">EN VIVO</span>':'')+'</td><td class=\"val\">'+r.valor+'</td><td>'+r.objetivo+'</td><td><span class=\"st '+cls+'\">'+r.estado+'</span></td>';tb.appendChild(tr);});document.getElementById('upd').textContent='Datos del: '+(d.actualizado||'?');localStorage.setItem('pb_cache',JSON.stringify(d));}
+async function cargar(){const e=document.getElementById('err');e.style.display='none';try{const r=await fetch('data/data.json',{cache:'no-store'});if(!r.ok)throw 0;render(await r.json());}catch(x){const c=localStorage.getItem('pb_cache');if(c){render(JSON.parse(c));}e.textContent='No se pudo leer data.json. Mostrando último dato guardado si existe. Ejecuta el workflow en Actions para generarlo.';e.style.display='block';}}
+async function vivo(){const e=document.getElementById('err');e.style.display='none';try{const [mk,fg]=await Promise.all([fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false').then(x=>x.json()),fetch('https://api.alternative.me/fng/?limit=1').then(x=>x.json())]);const md=mk.market_data;const price=md.current_price.usd;const ath=md.ath.usd;const chg=md.ath_change_percentage.usd;const athDate=new Date(md.ath_date.usd);const dias=Math.round((Date.now()-athDate)/864e5);const fng=parseInt(fg.data[0].value);const c=JSON.parse(localStorage.getItem('pb_cache')||'{"rows":[]}');const upd=(k,valor,estado)=>{const row=c.rows.find(r=>r.key===k);if(row){row.valor=valor;row.estado=estado;row.live=true;}};upd('dias_ath',dias+' días',dias>=380?'ALCANZADO':(dias>=357?'ACERCÁNDOSE':'LEJOS'));upd('caida_ath',chg.toFixed(1)+'%',chg<=-55?'ALCANZADO':(chg<=-52?'ACERCÁNDOSE':'LEJOS'));upd('fng',String(fng),fng<=25?'ALCANZADO':(fng<=27?'ACERCÁNDOSE':'LEJOS'));c.actualizado=new Date().toISOString().slice(0,16).replace('T',' ')+' (vivo)';render(c);}catch(x){e.textContent='No se pudo recalcular en vivo (posible límite o CORS de la API). Intenta de nuevo en un minuto.';e.style.display='block';}}
+cargar();
+</script>
+</body>
+</html>

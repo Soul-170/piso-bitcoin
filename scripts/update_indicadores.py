@@ -1,6 +1,6 @@
 import json, datetime, urllib.request, sys
 
-UA = {'User-Agent': 'piso-bitcoin-bot'}
+UA = {'User-Agent': 'Mozilla/5.0 (piso-bitcoin-bot)'}
 
 def get(url):
     req = urllib.request.Request(url, headers=UA)
@@ -23,19 +23,23 @@ def main():
     rows = []
     hoy = datetime.date.today().isoformat()
 
-    # --- CoinGecko: precio, ATH y serie para MA 200 semanas ---
-    mk = get('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false')
-    md = mk['market_data']
-    price = md['current_price']['usd']
-    ath = md['ath']['usd']
-    chg = md['ath_change_percentage']['usd']
-    ath_date = md['ath_date']['usd'][:10]
-    d_ath = datetime.date.fromisoformat(ath_date)
-    dias = (datetime.date.today() - d_ath).days
+    # --- Binance: klines diarios (precio actual + serie para MA y ATH) ---
+    kl = get('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000')
+    cierres = [float(k[4]) for k in kl]
+    altos = [float(k[2]) for k in kl]
+    price = cierres[-1]
 
-    chart = get('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=1400&interval=daily')
-    precios = [p[1] for p in chart['prices']]
-    ma200w = sum(precios) / len(precios) if precios else price
+    # ATH aproximado desde la serie disponible
+    ath = max(altos)
+    idx_ath = altos.index(ath)
+    ms_ath = int(kl[idx_ath][0])
+    d_ath = datetime.datetime.utcfromtimestamp(ms_ath / 1000).date()
+    dias = (datetime.date.today() - d_ath).days
+    chg = (price - ath) / ath * 100
+
+    # MA de las ultimas 1400 muestras disponibles (aprox 200 semanas)
+    ventana = cierres[-1400:] if len(cierres) >= 1 else cierres
+    ma200w = sum(ventana) / len(ventana) if ventana else price
     ratio_ma = price / ma200w if ma200w else 0
 
     # --- Alternative.me: Miedo y Codicia ---
@@ -43,7 +47,7 @@ def main():
     fng = int(fg['data'][0]['value'])
 
     rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 380 días', 'estado': estado(dias, 380, True)})
-    rows.append({'key': 'caida_ath', 'valor': round(chg, 1), 'objetivo': '≤ -55%', 'estado': ('ALCANZADO' if chg <= -55 else ('ACERCÁNDOSE' if chg <= -52 else 'LEJOS'))})
+    rows.append({'key': 'caida_ath', 'valor': str(round(chg, 1)) + '%', 'objetivo': '≤ -55%', 'estado': ('ALCANZADO' if chg <= -55 else ('ACERCÁNDOSE' if chg <= -52 else 'LEJOS'))})
     rows.append({'key': 'ma200w', 'valor': round(ratio_ma, 2), 'objetivo': '≤ 1.00', 'estado': estado(ratio_ma, 1.0, False)})
     rows.append({'key': 'fng', 'valor': fng, 'objetivo': '≤ 25', 'estado': estado(fng, 25, False)})
 
@@ -77,7 +81,7 @@ def main():
             h.write(linea + '\n')
     except Exception:
         pass
-    print('OK', out['actualizado'])
+    print('OK', out['actualizado'], 'precio', price)
 
 if __name__ == '__main__':
     try:

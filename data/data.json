@@ -1,7 +1,13 @@
 {
   "actualizado": "2026-08-18",
-  "precio_usd": 64499.44,
+  "precio_usd": 64375.64,
   "rows": [
+    {
+      "key": "precio_btc",
+      "valor": "$64,376",
+      "objetivo": "referencia",
+      "estado": "INFO"
+    },
     {
       "key": "dias_ath",
       "valor": "316 días",
@@ -10,7 +16,7 @@
     },
     {
       "key": "caida_ath",
-      "valor": "-48.9%",
+      "valor": "-49.0%",
       "objetivo": "≤ -55%",
       "estado": "LEJOS"
     },

@@ -23,22 +23,23 @@ def main():
     rows = []
     hoy = datetime.date.today().isoformat()
 
-    # --- Binance: klines diarios (precio actual + serie para MA y ATH) ---
-    kl = get('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000')
-    cierres = [float(k[4]) for k in kl]
-    altos = [float(k[2]) for k in kl]
+    # --- Bitstamp: OHLC diario (precio actual + serie para MA y ATH) ---
+    bs = get('https://www.bitstamp.net/api/v2/ohlc/btcusd/?step=86400&limit=1000')
+    ohlc = bs['data']['ohlc']
+    cierres = [float(o['close']) for o in ohlc]
+    altos = [float(o['high']) for o in ohlc]
     price = cierres[-1]
 
     # ATH aproximado desde la serie disponible
     ath = max(altos)
     idx_ath = altos.index(ath)
-    ms_ath = int(kl[idx_ath][0])
-    d_ath = datetime.datetime.utcfromtimestamp(ms_ath / 1000).date()
+    ts_ath = int(ohlc[idx_ath]['timestamp'])
+    d_ath = datetime.datetime.utcfromtimestamp(ts_ath).date()
     dias = (datetime.date.today() - d_ath).days
     chg = (price - ath) / ath * 100
 
-    # MA de las ultimas 1400 muestras disponibles (aprox 200 semanas)
-    ventana = cierres[-1400:] if len(cierres) >= 1 else cierres
+    # MA de las ultimas muestras disponibles (aprox 200 semanas)
+    ventana = cierres[-1400:]
     ma200w = sum(ventana) / len(ventana) if ventana else price
     ratio_ma = price / ma200w if ma200w else 0
 

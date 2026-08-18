@@ -47,7 +47,7 @@ def main():
     fg = get('https://api.alternative.me/fng/?limit=1')
     fng = int(fg['data'][0]['value'])
 
-        rows.append({'key': 'precio_btc', 'valor': '$' + format(round(price), ','), 'objetivo': 'referencia', 'estado': 'INFO'})
+    rows.append({'key': 'precio_btc', 'valor': '$' + format(round(price), ','), 'objetivo': 'referencia', 'estado': 'INFO'})
 rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 380 días', 'estado': estado(dias, 380, True)})
     rows.append({'key': 'caida_ath', 'valor': str(round(chg, 1)) + '%', 'objetivo': '≤ -55%', 'estado': ('ALCANZADO' if chg <= -55 else ('ACERCÁNDOSE' if chg <= -52 else 'LEJOS'))})
     rows.append({'key': 'ma200w', 'valor': round(ratio_ma, 2), 'objetivo': '≤ 1.00', 'estado': estado(ratio_ma, 1.0, False)})

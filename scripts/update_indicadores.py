@@ -48,7 +48,7 @@ def main():
     fng = int(fg['data'][0]['value'])
 
     rows.append({'key': 'precio_btc', 'valor': '$' + format(round(price), ','), 'objetivo': 'referencia', 'estado': 'INFO'})
-rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 380 días', 'estado': estado(dias, 380, True)})
+    rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 380 días', 'estado': estado(dias, 380, True)})
     rows.append({'key': 'caida_ath', 'valor': str(round(chg, 1)) + '%', 'objetivo': '≤ -55%', 'estado': ('ALCANZADO' if chg <= -55 else ('ACERCÁNDOSE' if chg <= -52 else 'LEJOS'))})
     rows.append({'key': 'ma200w', 'valor': round(ratio_ma, 2), 'objetivo': '≤ 1.00', 'estado': estado(ratio_ma, 1.0, False)})
     rows.append({'key': 'fng', 'valor': fng, 'objetivo': '≤ 25', 'estado': estado(fng, 25, False)})
@@ -60,6 +60,7 @@ rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 
         ('realizado', 'https://bitcoin-data.com/v1/realized-price/last', '≤ 53000', 53000),
         ('supply_profit', 'https://bitcoin-data.com/v1/supply-in-profit/last', '≤ 50%', 50),
     ]
+
     for key, url, obj_txt, obj in onchain:
         try:
             data = get(url)
@@ -74,20 +75,8 @@ rows.append({'key': 'dias_ath', 'valor': str(dias) + ' días', 'objetivo': '≥ 
             rows.append({'key': key, 'valor': 'sin dato', 'objetivo': obj_txt, 'estado': 'LEJOS'})
 
     out = {'actualizado': hoy, 'precio_usd': round(price, 2), 'rows': rows}
+
     with open('data/data.json', 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
-    linea = hoy + ',' + str(round(price, 2)) + ',' + str(dias) + ',' + str(round(chg, 1)) + ',' + str(round(ratio_ma, 2)) + ',' + str(fng)
-    try:
-        with open('data/historico.csv', 'a', encoding='utf-8') as h:
-            h.write(linea + '\n')
-    except Exception:
-        pass
-    print('OK', out['actualizado'], 'precio', price)
-
-if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        print('ERROR:', e, file=sys.stderr)
-        sys.exit(1)
+main()

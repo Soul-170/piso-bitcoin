@@ -1,1 +1,54 @@
-{"actualizado":"2026-08-17 (inicial)","rows":[{"key":"dias_ath","valor":"—","objetivo":"≥ 380 días","estado":"LEJOS"},{"key":"caida_ath","valor":"—","objetivo":"≤ -55%","estado":"LEJOS"},{"key":"ma200w","valor":"—","objetivo":"≤ 1.00","estado":"LEJOS"},{"key":"realizado","valor":"—","objetivo":"≤ 53000","estado":"LEJOS"},{"key":"sopr365","valor":"—","objetivo":"≤ 1.00","estado":"LEJOS"},{"key":"mvrv","valor":"—","objetivo":"≤ 1.00","estado":"LEJOS"},{"key":"supply_profit","valor":"—","objetivo":"≤ 50%","estado":"LEJOS"},{"key":"fng","valor":"—","objetivo":"≤ 25","estado":"LEJOS"}]}
+{
+  "actualizado": "2026-08-18",
+  "precio_usd": 64499.44,
+  "rows": [
+    {
+      "key": "dias_ath",
+      "valor": "316 días",
+      "objetivo": "≥ 380 días",
+      "estado": "LEJOS"
+    },
+    {
+      "key": "caida_ath",
+      "valor": "-48.9%",
+      "objetivo": "≤ -55%",
+      "estado": "LEJOS"
+    },
+    {
+      "key": "ma200w",
+      "valor": 0.81,
+      "objetivo": "≤ 1.00",
+      "estado": "ALCANZADO"
+    },
+    {
+      "key": "fng",
+      "valor": 41,
+      "objetivo": "≤ 25",
+      "estado": "LEJOS"
+    },
+    {
+      "key": "mvrv",
+      "valor": 1.2,
+      "objetivo": "≤ 1.00",
+      "estado": "LEJOS"
+    },
+    {
+      "key": "sopr365",
+      "valor": 0.99,
+      "objetivo": "≤ 1.00",
+      "estado": "ALCANZADO"
+    },
+    {
+      "key": "realizado",
+      "valor": 52243.94,
+      "objetivo": "≤ 53000",
+      "estado": "ALCANZADO"
+    },
+    {
+      "key": "supply_profit",
+      "valor": "sin dato",
+      "objetivo": "≤ 50%",
+      "estado": "LEJOS"
+    }
+  ]
+}

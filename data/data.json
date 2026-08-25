@@ -1,22 +1,22 @@
 {
-  "actualizado": "2026-08-24",
-  "precio_usd": 79202.75,
+  "actualizado": "2026-08-25",
+  "precio_usd": 78720.43,
   "rows": [
     {
       "key": "precio_btc",
-      "valor": "$79,203",
+      "valor": "$78,720",
       "objetivo": "referencia",
       "estado": "INFO"
     },
     {
       "key": "dias_ath",
-      "valor": "322 días",
+      "valor": "323 días",
       "objetivo": "≥ 380 días",
       "estado": "LEJOS"
     },
     {
       "key": "caida_ath",
-      "valor": "-37.3%",
+      "valor": "-37.7%",
       "objetivo": "≤ -55%",
       "estado": "LEJOS"
     },
@@ -28,25 +28,25 @@
     },
     {
       "key": "fng",
-      "valor": 73,
+      "valor": 74,
       "objetivo": "≤ 25",
       "estado": "LEJOS"
     },
     {
       "key": "mvrv",
-      "valor": 1.48,
+      "valor": 1.5,
       "objetivo": "≤ 1.00",
       "estado": "LEJOS"
     },
     {
       "key": "sopr365",
-      "valor": 1.0,
+      "valor": 1.02,
       "objetivo": "≤ 1.00",
       "estado": "ACERCÁNDOSE"
     },
     {
       "key": "realizado",
-      "valor": 52421.33,
+      "valor": 52473.26,
       "objetivo": "≤ 53000",
       "estado": "ALCANZADO"
     },
